@@ -12,8 +12,7 @@
             SAFE.PARSE_DATE('%Y%m%d', CAST(`date` AS STRING))
         ) AS `date`,
 
-        -- time カラムは文字列として保持
-        CAST(`time` AS STRING) AS `time`,
+        FORMAT_TIME('%H:%M', PARSE_TIME('%H:%M', `time`)) AS `time`,
         
         -- date と time 以外の全カラムを、動的に取得してすべて FLOAT64 に一括変換
         {%- for col in columns %}
@@ -23,5 +22,5 @@
         {%- endfor %}
 
     from {{ source_relation }}
-
+    WHERE `date` IS NOT NULL AND `time` IS NOT NULL
 {% endmacro %}

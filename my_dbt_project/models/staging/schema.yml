@@ -6,3 +6,4 @@ sources:
     schema: power_demand
     tables:
       - name: eria_jukyu_last_month_01_converted_header
+      - name: eria_jukyu_last_month_03_converted_header
