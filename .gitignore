@@ -1,3 +1,10 @@
 .streamlit/secrets.toml
 .venv/
 .vscode/
+*.csv
+memo.txt
+__pycache__/
+*.pyc
+*.pyo
+logs/
+dbt.log
