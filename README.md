@@ -1,6 +1,24 @@
 # Streamlit Google認証アプリ (Cloud Run デプロイ)
 
 Google Cloud (Cloud Run) 上で動く、Google認証（OAuth 2.0）を備えた Streamlit アプリケーションの構築・デプロイ手順です。
+
+## 使用技術・構成
+
+```mermaid
+flowchart LR
+    USER["ユーザー"]
+    DBT["dbt<br>データ変換・モデリング"]
+
+    subgraph GCP["Google Cloud (GCP)"]
+        APP["Streamlit<br>フロントエンド<br>Cloud Run"]
+        BQ[("BigQuery<br>DWH")]
+        APP -->|"データを参照"| BQ
+    end
+
+    USER --> APP
+    DBT -->|"データを変換・モデル化"| BQ
+```
+
 ## 📊 全体の流れ（デプロイまでのステップ）
 ```mermaid
 graph LR
@@ -16,12 +34,25 @@ graph LR
 ```text
 streamlit_gcp_dbt/
 ├── .streamlit/
-│   └── secrets.toml  # ローカル実行用の認証情報（※Git非推奨）
-├── .gcloudignore     # Cloud Runへ不要なファイルを送らないための除外設定
-├── app.py            # アプリケーション本体
-├── Dockerfile        # コンテナのビルド定義
-├── requirements.txt  # 依存パッケージ
-└── README.md         # 構築・デプロイ手順書
+│   └── secrets.toml                 # ローカル用シークレット（Gitへの登録禁止）
+├── my_dbt_project/                  # dbtプロジェクト
+│   ├── models/
+│   │   ├── staging/                 # 元データごとのステージングモデル
+│   │   ├── intermediate/            # 中間モデル
+│   │   └── marts/                   # 分析用の最終モデル
+│   ├── macros/                      # 共通マクロ
+│   ├── analyses/
+│   ├── seeds/
+│   ├── snapshots/
+│   ├── tests/
+│   ├── dbt_project.yml              # dbtプロジェクト設定
+│   └── packages.yml                 # dbtパッケージ設定
+├── app.py                           # Streamlitアプリ本体
+├── workflow.py                      # CSV取得・加工とGCSへの保存処理
+├── Dockerfile                       # Cloud Run用コンテナの定義
+├── requirements.txt                 # Python依存パッケージ
+├── .gcloudignore                    # Cloud Runへの不要ファイル除外設定
+└── README.md                        # 構築・デプロイ手順書
 ```
 
 ---
